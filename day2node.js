@@ -40,3 +40,30 @@ fs.writeFile(path.join(__dirname,'files','write.txt'),'Nice to meet you',(err)=>
 })
 //Above method leads to callback hell
 
+//We can use promises
+const fsPromises = require('fs').promises;
+const fileops = async () => {
+    try{
+        const data = await fsPromises.readFile(path.join(__dirname,'files','one.txt'),'utf-8');
+        console.log(data);
+        await fsPromises.writeFile(path.join(__dirname,'files','promiseswrite.txt'),data);
+        await fsPromises.appendFile(path.join(__dirname,'files','promiseswrite.txt'),"\nNice to meet you");
+        await fsPromises.rename(path.join(__dirname,'files','promiseswrite.txt'),path.join(__dirname,'files','promisesnewwrite.txt'));
+        await fsPromises.unlink(path.join(__dirname,'files','one.txt'));
+    }catch(err) {
+        console.error(err);
+    }
+}
+fileops();
+
+//Suppose if we want to read and write large data in file then it is not possible to do bucket by bucket
+const fs = require('fs');
+const rs = fs.createReadStream('./files/large.txt',{encoding:'utf-8'});
+const ws = fs.createWriteStream('./files/newlarge.txt')
+rs.on('data',(dataChunck)=>{ //rs will read the data chuck by chuck then writes to ws
+    ws.write(dataChunck);
+})
+//Instead of above method we can use pipe to copy data from rs to ws
+rs.pipe(ws);
+
+
