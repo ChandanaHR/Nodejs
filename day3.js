@@ -36,3 +36,27 @@ console.log(format(new Date(),'yyyyMMdd\tHH:mm:ss'))
 //in package.json change scripts : {"start" : "node index", "dev":"nodemon index"}
 //in cmd type npm run dev //nodemon will start 
 //in cmd type npm i uuid //which allows us to generate id's uuid will be installed
+//index.js
+const {v4 : uuidv4} = require('uuid');
+console.log(uuidv4())
+//if we want to install specific version npm i uuid@version no
+
+//Event emitter: It is a core module that provides a way to handle asynchronous events
+//logevents.js
+const {format} = require('date-fns');
+const {v4 : uuidv4} = require('uuid');
+//console.log(format(new Date(),'yyyyMMdd\tHH:mm:ss'))
+const fs = require('fs');
+const fsPromises = require('fs').promises;
+const path = require('path');
+const logEvents = async(message)=>{
+    const dateTime = `${format(new Date(),'yyyyMMdd\tHH:mm:ss')}`;
+    const logItem = `${dateTime}\t${uuidv4()}\t${message}`;
+    console.log(logItem);
+    try {
+        await fsPromises.appendFile(path.join(__dirname,'logs','eventlog.txt'),logItem);
+    } catch(err) {
+        console.error(err);
+    }
+}
+module.exports = logEvents;
