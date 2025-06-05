@@ -60,3 +60,54 @@ const logEvents = async(message)=>{
     }
 }
 module.exports = logEvents;
+
+
+//eventsexample.js
+const {format} = require('date-fns');
+const {v4 : uuidv4} = require('uuid');
+//console.log(format(new Date(),'yyyyMMdd\tHH:mm:ss'))
+const fs = require('fs');
+const fsPromises = require('fs').promises;
+const path = require('path');
+const logEvents = async(message)=>{
+    const dateTime = `${format(new Date(),'yyyyMMdd\tHH:mm:ss')}`;
+    const logItem = `${dateTime}\t${uuidv4()}\t${message}`;
+    console.log(logItem);
+    try {
+        if(!fs.existsSync(path.join(__dirname,'logs'))){
+            await fsPromises.mkdir(path.join(__dirname,'logs'))
+        }
+        await fsPromises.appendFile(path.join(__dirname,'logs','eventlog.txt'),logItem);
+    } catch(err) {
+        console.log(err);
+    }
+}
+module.exports = logEvents;
+
+//index.js
+//const { setTimeout } = require('timers/promises');
+const logEvents = require('./eventsexample');
+const eventemitter = require('events');
+class Myemitter extends eventemitter{};
+//initialize object
+const myemitter = new Myemitter();
+//add listener for log event
+myemitter.on('log',(msg)=>logEvents(msg)) //listening to the function logEvents in eventsexample file
+setTimeout(() => {
+  myemitter.emit('log', 'Log event emitted');
+}, 4000);
+
+//example.js
+const eventemitter = require('events')
+class example extends eventemitter{}
+const object = new example();
+object.on('login',(username)=>{
+    console.log(`${username} has logged in`);
+})
+object.on('logout',(username)=>{
+    console.log(`${username} has logged out`)
+})
+object.emit('login','Chandana')
+object.emit('logout','Chandana')  //To run file using nodemon type: nodemon filename.js
+
+//To install nodemon as local dependency type npm install --save-dev nodemon
