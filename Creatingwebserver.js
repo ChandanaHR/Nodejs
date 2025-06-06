@@ -66,3 +66,29 @@ const httpserver = webserver.createServer((req,res)=>{
 httpserver.listen(3000,()=>{
     console.log("Server is running on port 3000")
 })
+
+//3 Creating HTML files
+const webserver1 = require('http')
+const fs = require('fs')
+const path = require('path')
+const http1server = webserver1.createServer((req,res)=>{
+    if (req.url === '/favicon.ico') {
+        res.writeHead(204); // No Content
+        res.end();
+        return;
+    }
+    let filepath = path.join(__dirname, req.url==='/'? 'index.html': req.url+'.html');
+    fs.readFile(filepath, (err,content)=>{
+        if(err) {
+            res.writeHead(404,{'Content-type':'text/html'})
+            res.end(`<h1>404-Page not found</h1>`)
+        }
+        else {
+            res.writeHead(200,{'Content-type':'text/html'})
+            res.end(content)
+        }
+    });
+});
+http1server.listen(3000,()=>{
+    console.log("Server is running on port 3000")
+})
