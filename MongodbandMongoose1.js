@@ -108,3 +108,28 @@ run();
                 color: String,
                 cc : number
           })
+          const Cars = mongoose.model("Cars", carschema)
+          module.exports = Cars
+          //In app.js
+          const mongoose = require('mongoose');
+const Cars = require('./model.js');
+
+async function run() {
+  try {
+    await mongoose.connect("mongodb://localhost:27017/Cars");
+
+    const Nios = new Cars({ name: "Nios", color: "blue", cc: 456 });
+    const Swift = new Cars({ name: "Swift", color: "black", cc: 123 });
+    const Creta = new Cars({ name: "Creta", color: "red", cc: 789 });
+
+    const result = await Cars.insertMany([Nios, Swift, Creta]);
+    console.log("All of the cars are successfully inserted", result);
+  } catch (err) {
+    console.error("Insertion error:", err);
+  } finally {
+    await mongoose.connection.close(); // Clean up connection
+  }
+}
+
+run();
+
